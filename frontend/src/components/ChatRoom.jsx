@@ -880,7 +880,8 @@ function ChatRoom() {
         userId: String(currentUser.userId),
       },
       reconnectDelay: 5000,
-      webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+      webSocketFactory: () =>
+        new SockJS("https://chatsever-production.up.railway.app/ws"),
       onConnect: () => {
         setConnectionStatus("Đã kết nối realtime");
 
