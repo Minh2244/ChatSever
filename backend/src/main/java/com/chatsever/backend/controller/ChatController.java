@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = { "https://chat-sever-roan.vercel.app", "http://localhost:5173" })
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
 public class ChatController {
