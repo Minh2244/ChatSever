@@ -1,4 +1,5 @@
 E:\ChatSever\backend\src\main\java\com\chatsever\backend\BackendApplication.java
+E:\ChatSever\backend\src\main\java\com\chatsever\backend\config\CorsConfig.java
 E:\ChatSever\backend\src\main\java\com\chatsever\backend\config\package-info.java
 E:\ChatSever\backend\src\main\java\com\chatsever\backend\config\WebSocketConfig.java
 E:\ChatSever\backend\src\main\java\com\chatsever\backend\controller\AuthController.java

@@ -20,8 +20,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                // Minh thêm link Vercel của mình và giữ lại localhost để sau này còn test dưới
-                // máy nhà
                 .setAllowedOriginPatterns(
                         "https://chat-sever-roan.vercel.app",
                         "http://localhost:5173")
