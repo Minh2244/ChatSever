@@ -1,13 +1,17 @@
-# Sử dụng JDK 17 bản nhẹ
-FROM eclipse-temurin:17-jdk-alpine
+# Stage 1: build jar bằng Maven (không cần mvnw)
+FROM maven:3.9.9-eclipse-temurin-17-alpine AS build
 
 WORKDIR /app
 
-# Copy toàn bộ nội dung thư mục backend vào /app
 COPY . .
 
-# Chạy lệnh build trực tiếp qua shell để né lỗi permission
-RUN sh mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
-# Chạy ứng dụng
-ENTRYPOINT ["sh", "-c", "java -jar target/*.jar"]
+# Stage 2: runtime nhẹ chỉ có JRE
+FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
