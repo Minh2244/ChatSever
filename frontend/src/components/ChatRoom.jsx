@@ -365,7 +365,7 @@ function ChatRoom() {
         avatarUrl: item.avatarUrl || "",
       };
       return accumulator;
-    });
+    }, {}); // ĐÃ FIX DẤU PHẨY VÀ DẤU NGOẶC Ở ĐÂY NÈ!
 
     setUserDirectory(directory);
     return directory;
@@ -589,7 +589,6 @@ function ChatRoom() {
     return stream;
   };
 
-  // ĐÃ SỬA CHUẨN XÁC HÀM buildPeerConnection
   const buildPeerConnection = (peerId, mode) => {
     closePeerConnection();
 
