@@ -365,7 +365,7 @@ function ChatRoom() {
         avatarUrl: item.avatarUrl || "",
       };
       return accumulator;
-    }, {}); // ĐÃ FIX DẤU PHẨY VÀ DẤU NGOẶC Ở ĐÂY NÈ!
+    }, {}); // Fix ngoặc nhọn ở đây nhe
 
     setUserDirectory(directory);
     return directory;
@@ -589,29 +589,30 @@ function ChatRoom() {
     return stream;
   };
 
-  const buildPeerConnection = (peerId, mode) => {
+  // HÀM MỚI: TỰ ĐỘNG LẤY VÉ TURN SERVER TỪ METERED
+  const buildPeerConnection = async (peerId, mode) => {
     closePeerConnection();
 
+    // Mặc định luôn dùng STUN của Google
+    let iceServers = [
+      { urls: "stun:stun.l.google.com:19302" },
+      { urls: "stun:stun1.l.google.com:19302" },
+    ];
+
+    // Lấy thông tin TURN Server động từ Metered
+    try {
+      const response = await fetch(
+        "https://chatsever.metered.live/api/v1/turn/credentials?apiKey=a9bfe560889f62383054d2698556cb7509f0",
+      );
+      const meteredServers = await response.json();
+      // Gộp chung vào mảng iceServers
+      iceServers = [...iceServers, ...meteredServers];
+    } catch (err) {
+      console.error("Lỗi lấy thông tin TURN Server:", err);
+    }
+
     const connection = new RTCPeerConnection({
-      iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-        { urls: "stun:stun1.l.google.com:19302" },
-        {
-          urls: "turn:chatsever.metered.live:80",
-          username: "7a00925041dadea42a8de725",
-          credential: "1/eahuaoi5oy4lbL",
-        },
-        {
-          urls: "turn:chatsever.metered.live:443",
-          username: "7a00925041dadea42a8de725",
-          credential: "1/eahuaoi5oy4lbL",
-        },
-        {
-          urls: "turn:chatsever.metered.live:443?transport=tcp",
-          username: "7a00925041dadea42a8de725",
-          credential: "1/eahuaoi5oy4lbL",
-        },
-      ],
+      iceServers: iceServers,
     });
 
     connection.onicecandidate = (event) => {
@@ -660,6 +661,7 @@ function ChatRoom() {
     }
   };
 
+  // ĐÃ THÊM AWAIT VÀO ĐÂY
   const startOutgoingCall = async (mode) => {
     if (!currentUser || !activeConversationIsPrivate) {
       setError("Chỉ gọi được trong khung chat riêng.");
@@ -678,7 +680,7 @@ function ChatRoom() {
       );
 
       const stream = await ensureLocalStream(mode);
-      const connection = buildPeerConnection(peerId, mode);
+      const connection = await buildPeerConnection(peerId, mode); // Đợi lấy thông tin server xong
       stream.getTracks().forEach((track) => connection.addTrack(track, stream));
 
       const offer = await connection.createOffer();
@@ -690,6 +692,7 @@ function ChatRoom() {
     }
   };
 
+  // ĐÃ THÊM AWAIT VÀO ĐÂY
   const acceptIncomingCall = async () => {
     if (!incomingCall) {
       return;
@@ -705,7 +708,7 @@ function ChatRoom() {
       setCallStatus("Đang kết nối cuộc gọi...");
 
       const stream = await ensureLocalStream(mode);
-      const connection = buildPeerConnection(incomingCall.senderId, mode);
+      const connection = await buildPeerConnection(incomingCall.senderId, mode); // Đợi lấy thông tin server xong
       stream.getTracks().forEach((track) => connection.addTrack(track, stream));
 
       const offer = safeParseJson(incomingCall.data);
