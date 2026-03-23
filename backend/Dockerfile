@@ -1,17 +1,15 @@
-# Stage 1: build jar bằng Maven (không cần mvnw)
-FROM maven:3.9.9-eclipse-temurin-17-alpine AS build
-
+# Sử dụng Maven có sẵn để build, không dùng file mvnw của project nữa
+FROM maven:3.8.5-openjdk-17-slim AS build
 WORKDIR /app
 
+# Copy toàn bộ code backend vào
 COPY . .
 
+# Build bằng lệnh mvn của hệ thống
 RUN mvn clean package -DskipTests
 
-# Stage 2: runtime nhẹ chỉ có JRE
-FROM eclipse-temurin:17-jre-alpine
-
+# Chạy ứng dụng
+FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
-
 COPY --from=build /app/target/*.jar app.jar
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
