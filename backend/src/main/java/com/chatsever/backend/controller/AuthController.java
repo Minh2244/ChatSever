@@ -1,0 +1,49 @@
+package com.chatsever.backend.controller;
+
+import com.chatsever.backend.controller.dto.AuthResponse;
+import com.chatsever.backend.controller.dto.LoginRequest;
+import com.chatsever.backend.controller.dto.RegisterRequest;
+import com.chatsever.backend.model.User;
+import com.chatsever.backend.service.UserService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:5173")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final UserService userService;
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+        User user = userService.register(request);
+        AuthResponse response = AuthResponse.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .avatarUrl(user.getAvatarUrl())
+                .message("Register success")
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        User user = userService.login(request);
+        AuthResponse response = AuthResponse.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .avatarUrl(user.getAvatarUrl())
+                .message("Login success")
+                .build();
+        return ResponseEntity.ok(response);
+    }
+}
