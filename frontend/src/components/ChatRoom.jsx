@@ -365,7 +365,7 @@ function ChatRoom() {
         avatarUrl: item.avatarUrl || "",
       };
       return accumulator;
-    }, {});
+    });
 
     setUserDirectory(directory);
     return directory;
@@ -589,32 +589,32 @@ function ChatRoom() {
     return stream;
   };
 
+  // ĐÃ SỬA CHUẨN XÁC HÀM buildPeerConnection
   const buildPeerConnection = (peerId, mode) => {
     closePeerConnection();
 
     const connection = new RTCPeerConnection({
       iceServers: [
-        // STUN Servers (Hỏi đường)
         { urls: "stun:stun.l.google.com:19302" },
         { urls: "stun:stun1.l.google.com:19302" },
-        // TURN Servers (Trạm trung chuyển video khi bị tường lửa chặn)
         {
-          urls: "turn:openrelay.metered.ca:80",
-          username: "openrelayproject",
-          credential: "openrelayproject",
+          urls: "turn:chatsever.metered.live:80",
+          username: "7a00925041dadea42a8de725",
+          credential: "1/eahuaoi5oy4lbL",
         },
         {
-          urls: "turn:openrelay.metered.ca:443",
-          username: "openrelayproject",
-          credential: "openrelayproject",
+          urls: "turn:chatsever.metered.live:443",
+          username: "7a00925041dadea42a8de725",
+          credential: "1/eahuaoi5oy4lbL",
         },
         {
-          urls: "turn:openrelay.metered.ca:443?transport=tcp",
-          username: "openrelayproject",
-          credential: "openrelayproject",
+          urls: "turn:chatsever.metered.live:443?transport=tcp",
+          username: "7a00925041dadea42a8de725",
+          credential: "1/eahuaoi5oy4lbL",
         },
       ],
     });
+
     connection.onicecandidate = (event) => {
       if (!event.candidate) {
         return;
@@ -623,14 +623,10 @@ function ChatRoom() {
     };
 
     connection.ontrack = (event) => {
-      if (!remoteStreamRef.current) {
-        remoteStreamRef.current = new MediaStream();
-      }
-      event.streams[0].getTracks().forEach((track) => {
-        remoteStreamRef.current.addTrack(track);
-      });
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = remoteStreamRef.current;
+      if (event.streams && event.streams[0]) {
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.srcObject = event.streams[0];
+        }
       }
     };
 
