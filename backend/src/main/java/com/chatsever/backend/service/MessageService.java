@@ -7,9 +7,12 @@ import com.chatsever.backend.model.User;
 import com.chatsever.backend.repository.MessageRepository;
 import com.chatsever.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,17 +55,30 @@ public class MessageService {
     }
 
     public List<ChatMessageResponse> getPrivateChatHistory(Integer userId1, Integer userId2) {
-        return messageRepository.findPrivateChatHistory(userId1, userId2)
+        // CHỈ LẤY 100 TIN NHẮN MỚI NHẤT TỪ DB LÊN (LƯU Ý: NÓ ĐANG BỊ NGƯỢC THỜI GIAN DO
+        // DESC)
+        List<ChatMessageResponse> history = messageRepository
+                .findPrivateChatHistory(userId1, userId2, PageRequest.of(0, 100))
                 .stream()
                 .map(this::toResponse)
-                .toList();
+                .collect(Collectors.toList());
+
+        // ĐẢO NGƯỢC LẠI ĐỂ HIỂN THỊ ĐÚNG (TIN CŨ Ở TRÊN, TIN MỚI Ở DƯỚI)
+        Collections.reverse(history);
+        return history;
     }
 
     public List<ChatMessageResponse> getPublicChatHistory() {
-        return messageRepository.findByReceiverIsNullOrderByCreatedAtAscMsgIdAsc()
+        // CHỈ LẤY 100 TIN NHẮN CHUNG MỚI NHẤT
+        List<ChatMessageResponse> history = messageRepository
+                .findByReceiverIsNullOrderByCreatedAtDescMsgIdDesc(PageRequest.of(0, 100))
                 .stream()
                 .map(this::toResponse)
-                .toList();
+                .collect(Collectors.toList());
+
+        // ĐẢO NGƯỢC LẠI
+        Collections.reverse(history);
+        return history;
     }
 
     public List<Integer> getPrivateConversationPartnerIds(Integer userId) {
