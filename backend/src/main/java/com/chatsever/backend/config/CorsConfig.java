@@ -10,7 +10,12 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://chat-sever-roan.vercel.app")
+                // ĐỔI SANG allowedOriginPatterns ĐỂ KHÔNG BỊ XUNG ĐỘT VỚI Credentials
+                .allowedOriginPatterns(
+                        "https://chat-sever-roan.vercel.app",
+                        "https://chat-sever-roan.vercel.app/", // Thêm cái có dấu gạch chéo cho chắc ăn 100%
+                        "http://localhost:5173" // Mở luôn cho lúc code trên máy tính
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
