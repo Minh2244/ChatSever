@@ -3,3 +3,4 @@ Hệ thống được xây dựng dựa trên mô hình web hiện đại, bao g
 Backend: Java (Spring Boot kết hợp WebSocket), triển khai trên nền tảng Render
 Frontend: React (HTML, CSS, JavaScript) kết hợp WebSocket và các thư viện hỗ trợ giao diện (UI), triển khai trên Verce
 Database: MySQL Server, triển khai trên nền tảng Railwayl và kết hợp với Cloudinary
+Sử dụng Metered để tạo đường truyền kết nối cho chức  năng gọi điện giúp cho  dùn khác mạng vẫn gọi được
